@@ -1,0 +1,28 @@
+<div class="col-md-6">
+  <h1> <i>Master</i> Branch Stats:</h1>
+
+  <h3>Latest 5 Commits:</h3>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Status</th>
+        <th>Committer</th>
+        <th>Commit Message</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% @commits_info.each do |commit, status| %>
+        <tr>
+          <th scope="row"><%= pretty_status(status) %></th>
+          <td><b><%= commit[:author][:login] %></b></td>
+          <td><%= pretty_commit(commit) %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <h3>Travis Status:</h3>
+  <>
+</div>

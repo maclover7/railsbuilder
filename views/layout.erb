@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Builder</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha256-7s5uDGW3AHqw6xtJmNNtr+OBRJUlgkNJEo78P4b0yRw= sha512-nNo+yCHEyn0smMxSswnf/OnX6/KwJuZTlNZBjauKhTK0c+zT+q5JOCx0UFhXQ6rJR9jg6Es8gPuD2uZcYDLqSw==" crossorigin="anonymous">
+    <style>
+      /* Status Lights Styling: */
+
+      /* Boilerplate: */
+      #light {
+        overflow: hidden;
+        padding: 0 0 4px;
+        width: 30px;
+      }
+
+      #light span {
+        border-radius: 40px;
+        display: block;
+        height: 20px;
+        margin: 2px auto 0;
+        opacity: .5;
+        width: 20px;
+      }
+
+      /* Light Colors: */
+      #red    { background-color: red; }
+      #green  { background-color: green; }
+      #light span.active    { opacity: 1; }
+    </style>
+  </head>
+
+  <body>
+    <%= yield %>
+  </body>
+
+</html>
