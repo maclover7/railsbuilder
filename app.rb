@@ -36,10 +36,16 @@ class Builder < Sinatra::Application
       end
 
       status = document.children.text.split("\n          ")[5]
-      if status[5].include?('0 errors') && status[5].include?('0 failures')
-        "<img src='travis-passing.svg'>"
+      link = document.children[7].children[1].attributes[0].value
+
+      if status.include?('0 errors') && status.include?('0 failures')
+        "<a href='http://intertwingly.net/projects/#{link}#todos'>
+          <img src='travis-passing.svg'>
+        </a>"
       else
-        "<img src='travis-failing.svg'>"
+        "<a href='http://intertwingly.net/projects/#{link}#todos'>
+          <img src='travis-failing.svg'>
+        </a>"
       end
     end
 
