@@ -7,11 +7,10 @@ class Builder < Sinatra::Application
   configure :development do
     register Sinatra::Reloader
     set :views, 'views'
+    set :public_folder, 'public'
   end
 
-  class << self
-    OCTOKIT_CLIENT = Octokit::Client.new(access_token: ENV['GH_TOKEN'])
-  end
+  OCTOKIT_CLIENT = Octokit::Client.new(access_token: ENV['GH_TOKEN'])
 
   get '/' do
     load_github
@@ -37,6 +36,17 @@ class Builder < Sinatra::Application
         "<div id='light'>
           <span class='active' id='red'></span>
         </div>"
+      end
+    end
+
+    def travis_status
+      @repo = Travis::Repository.find('rails/rails')
+      @build = @repo.branch('master')
+
+      if @build.state == 'passed'
+        "<img src='travis-passing.svg'>"
+      else
+        "<img src='travis-failing.svg'>"
       end
     end
 
