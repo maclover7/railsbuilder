@@ -67,16 +67,25 @@ class Builder < Sinatra::Application
 
     def travis_status(repo, branch)
       @repo = Travis::Repository.find(repo)
-      @build = @repo.branch(branch)
+      @original_build = @repo.branch(branch)
 
-      if repo != 'rails/rails'
-        @build = @build.jobs.find { |j| j.config['env'] == 'RAILS_MASTER=1' && j.config['rvm'] == '2.3.0' }
+      # If we're not checking rails/rails, it's a little
+      # tricky to figure out which job from the build we
+      # actually want to check the state of.
+      if repo == 'rails/rails'
+        @build = @original_build
+      else
+        @build = @original_build.jobs.find { |j| j.config['env'] == 'RAILS_MASTER=1' && j.config['rvm'] == '2.3.0' }
       end
 
       if @build.state == 'passed'
-        "<img src='travis-passing.svg'>"
+        "<a href='https://travis-ci.org/#{repo}/builds/#{@original_build.id}'>
+          <img src='travis-passing.svg'>
+        </a>"
       else
-        "<img src='travis-failing.svg'>"
+        "<a href='https://travis-ci.org/#{repo}/builds/#{@original_build.id}'>
+          <img src='travis-failing.svg'>
+        </a>"
       end
     end
 
