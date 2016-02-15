@@ -20,7 +20,6 @@ class Builder < Sinatra::Application
   get '/' do
     load_github
     load_awdwr
-    load_rubybench
     erb :index
   end
 
@@ -67,9 +66,10 @@ class Builder < Sinatra::Application
     end
 
     def load_github
+      # LOAD LATEST 5 COMMITs
       @commits_info = {}
 
-      # Load commit's gengeral information
+      # Load commit's general information
       @commits = OCTOKIT_CLIENT.commits('rails/rails', branch: 'master').take(5)
       @commits.each { |c| @commits_info[c] = '' }
 
@@ -82,9 +82,5 @@ class Builder < Sinatra::Application
           @commits_info[commit] = 'failure'
         end
       end
-    end
-
-    def load_rubybench
-      #
     end
 end
