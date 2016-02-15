@@ -10,6 +10,10 @@ class Builder < Sinatra::Application
     set :public_folder, 'public'
   end
 
+  configure :production, :development do
+    enable :logging
+  end
+
   OCTOKIT_CLIENT = Octokit::Client.new(access_token: ENV['GH_TOKEN'])
 
   get '/' do
