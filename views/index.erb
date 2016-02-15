@@ -36,6 +36,7 @@
 
       <ul>
         <li> Travis: <%= travis_status('rails/rails', branch) %> </li>
+        <li> AWDWR: <%= awdwr_status(branch) %> </li>
 
         <% if branch == 'master' %>
           <li> Discourse: <%= travis_status('discourse/discourse', branch) %> </li>

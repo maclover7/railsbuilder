@@ -1,7 +1,9 @@
 require 'sinatra/base'
-require 'pathname'
 require 'octokit'
 require 'travis'
+require 'net/http'
+require 'uri'
+require 'oga'
 
 class Builder < Sinatra::Application
   configure :development do
@@ -26,6 +28,21 @@ class Builder < Sinatra::Application
 
   # View helpers
   protected
+    def awdwr_status(branch)
+      if branch == '4-2-stable'
+        document = @awdwr_status[2]
+      elsif branch == 'master'
+        document = @awdwr_status[1]
+      end
+
+      status = document.children.text.split("\n          ")[5]
+      if status[5].include?('0 errors') && status[5].include?('0 failures')
+        "<img src='travis-passing.svg'>"
+      else
+        "<img src='travis-failing.svg'>"
+      end
+    end
+
     def pretty_commit(commit)
       text = commit[:commit][:message].split("\n\n")[0]
       link = "https://github.com/rails/rails/commit/#{commit[:sha]}"
@@ -65,9 +82,10 @@ class Builder < Sinatra::Application
 
   # Service loaders
   protected
-
     def load_awdwr
-      #
+      uri = URI.parse('http://intertwingly.net/projects/dashboard.html')
+      response = Net::HTTP.get_response(uri)
+      @awdwr_status = Oga.parse_html(response.body).xpath('//tr')
     end
 
     def load_github

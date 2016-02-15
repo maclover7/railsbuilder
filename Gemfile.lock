@@ -2,6 +2,8 @@ GEM
   remote: https://rubygems.org/
   specs:
     addressable (2.4.0)
+    ansi (1.5.0)
+    ast (2.2.0)
     backports (3.6.7)
     coderay (1.1.0)
     ethon (0.8.1)
@@ -29,6 +31,9 @@ GEM
     net-http-pipeline (1.0.1)
     octokit (2.1.1)
       sawyer (~> 0.3.0)
+    oga (2.1)
+      ast
+      ruby-ll (~> 2.1)
     pry (0.10.3)
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
@@ -42,6 +47,9 @@ GEM
       rack
     rack-test (0.6.3)
       rack (>= 1.0)
+    ruby-ll (2.1.2)
+      ansi
+      ast
     sawyer (0.3.0)
       faraday (~> 0.8, < 0.10)
       uri_template (~> 0.5.0)
@@ -77,6 +85,7 @@ PLATFORMS
 
 DEPENDENCIES
   octokit
+  oga
   pry
   puma
   rack

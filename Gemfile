@@ -3,6 +3,7 @@ source 'https://rubygems.org'
 ruby '2.3.0'
 
 gem 'octokit'
+gem 'oga'
 gem 'puma'
 gem 'rack'
 gem 'sinatra'
