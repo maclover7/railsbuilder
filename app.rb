@@ -1,17 +1,18 @@
 require 'sinatra/base'
-require 'sinatra/reloader'
+require 'pathname'
 require 'octokit'
 require 'travis'
 
 class Builder < Sinatra::Application
   configure :development do
+    require 'sinatra/reloader'
     register Sinatra::Reloader
-    set :views, 'views'
-    set :public_folder, 'public'
   end
 
   configure :production, :development do
     enable :logging
+    set :views, 'views'
+    set :public_folder, 'public'
   end
 
   OCTOKIT_CLIENT = Octokit::Client.new(access_token: ENV['GH_TOKEN'])
