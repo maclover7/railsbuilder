@@ -3,14 +3,23 @@
     The Rails Builder:
     <small>An easy way to monitor Rails' build status.</small>
   </h1>
+
+  <p>
+    Do you have a large open source Rails application that runs tests on a CI service like Travis?
+    Ping <a href="https://twitter.com/applerebel">Jon</a> to try and get it added to this page!
+    <br>
+    Catching regressions on Rails master is very important to the framework.
+  </p>
 </div>
+
+<hr style="margin-bottom: 5px;">
 
 <div class="row">
   <% BRANCHES.each do |branch| %>
     <div class="col-md-6">
-      <h1> <i><%= branch %></i> Branch Stats:</h1>
+      <h2> <i><%= branch %></i> Branch Stats:</h2>
 
-      <h3>Latest 5 Commits:</h3>
+      <h4>Latest 5 Commits:</h4>
 
       <table class="table">
         <thead>
@@ -32,7 +41,7 @@
         </tbody>
       </table>
 
-      <h3>CI Status:</h3>
+      <h4>CI Status:</h4>
 
       <ul>
         <li> Travis: <%= travis_status('rails/rails', branch) %> </li>
