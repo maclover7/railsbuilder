@@ -15,6 +15,7 @@ class Builder < Sinatra::Application
     set :public_folder, 'public'
   end
 
+  BRANCHES = ['4-2-stable', 'master']
   OCTOKIT_CLIENT = Octokit::Client.new(access_token: ENV['GH_TOKEN'])
 
   get '/' do
@@ -31,8 +32,12 @@ class Builder < Sinatra::Application
       "<a href='#{link}'>#{text}</a>"
     end
 
-    def pretty_status(status)
-      if status == 'success'
+    def pretty_status(commit, status)
+      if commit[:commit][:message].include?('[ci skip]')
+        "<div id='light'>
+          <span class='active' id='black'></span>
+        </div>"
+      elsif status == 'success'
         "<div id='light'>
           <span class='active' id='green'></span>
         </div>"
@@ -43,9 +48,9 @@ class Builder < Sinatra::Application
       end
     end
 
-    def travis_status(repo)
+    def travis_status(repo, branch)
       @repo = Travis::Repository.find(repo)
-      @build = @repo.branch('master')
+      @build = @repo.branch(branch)
 
       if repo != 'rails/rails'
         @build = @build.jobs.find { |j| j.config['env'] == 'RAILS_MASTER=1' && j.config['rvm'] == '2.3.0' }
@@ -66,20 +71,23 @@ class Builder < Sinatra::Application
     end
 
     def load_github
-      # LOAD LATEST 5 COMMITs
+      # LOAD LATEST 5 COMMITS
       @commits_info = {}
+      BRANCHES.each { |b| @commits_info[b] = {} }
 
-      # Load commit's general information
-      @commits = OCTOKIT_CLIENT.commits('rails/rails', branch: 'master').take(5)
-      @commits.each { |c| @commits_info[c] = '' }
+      BRANCHES.each do |branch|
+        # Load commit's general information
+        @commits = OCTOKIT_CLIENT.commits('rails/rails', branch).take(5)
+        @commits.each { |c| @commits_info[branch][c] = '' }
 
-      # Load commit's status information
-      @commits_info.each do |commit, _|
-        statuses = OCTOKIT_CLIENT.statuses('rails/rails', commit[:sha])
-        if statuses.any?
-          @commits_info[commit] = statuses[0][:state]
-        else
-          @commits_info[commit] = 'failure'
+        # Load commit's status information
+        @commits_info[branch].each do |commit, _|
+          statuses = OCTOKIT_CLIENT.statuses('rails/rails', commit[:sha])
+          if statuses.any?
+            @commits_info[branch][commit] = statuses[0][:state]
+          else
+            @commits_info[branch][commit] = 'failure'
+          end
         end
       end
     end

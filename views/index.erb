@@ -6,36 +6,41 @@
 </div>
 
 <div class="row">
-  <div class="col-md-6">
-    <h1> <i>Master</i> Branch Stats:</h1>
+  <% BRANCHES.each do |branch| %>
+    <div class="col-md-6">
+      <h1> <i><%= branch %></i> Branch Stats:</h1>
 
-    <h3>Latest 5 Commits:</h3>
+      <h3>Latest 5 Commits:</h3>
 
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Status</th>
-          <th>Committer</th>
-          <th>Commit Message</th>
-        </tr>
-      </thead>
-
-      <tbody>
-        <% @commits_info.each do |commit, status| %>
+      <table class="table">
+        <thead>
           <tr>
-            <th scope="row"><%= pretty_status(status) %></th>
-            <td><b><%= commit[:author][:login] %></b></td>
-            <td><%= pretty_commit(commit) %></td>
+            <th>Status</th>
+            <th>Committer</th>
+            <th>Commit Message</th>
           </tr>
+        </thead>
+
+        <tbody>
+          <% @commits_info[branch].each do |commit, status| %>
+            <tr>
+              <th scope="row"><%= pretty_status(commit, status) %></th>
+              <td><b><%= commit[:author][:login] %></b></td>
+              <td><%= pretty_commit(commit) %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+
+      <h3>CI Status:</h3>
+
+      <ul>
+        <li> Travis: <%= travis_status('rails/rails', branch) %> </li>
+
+        <% if branch == 'master' %>
+          <li> Discourse: <%= travis_status('discourse/discourse', branch) %> </li>
         <% end %>
-      </tbody>
-    </table>
-
-    <h3>CI Status:</h3>
-
-    <ul>
-      <li> Travis: <%= travis_status('rails/rails') %> </li>
-      <li> Discourse: <%= travis_status('discourse/discourse') %> </li>
-    </ul>
-  </div>
+      </ul>
+    </div>
+  <% end %>
 </div>
