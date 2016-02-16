@@ -29,24 +29,29 @@ class Builder < Sinatra::Application
   # View helpers
   protected
     def awdwr_status(branch)
-      if branch == '4-2-stable'
-        document = @awdwr_status[2]
-      elsif branch == 'master'
-        document = @awdwr_status[1]
+      output = []
+
+      relevant_builds = @data.find_all { |k, v| branch == v['branch'] }
+      relevant_builds.reverse!.each do |k, v|
+        if v['pass'] == true
+          status = 'passing'
+        else
+          status = 'failing'
+        end
+
+        link = v['link'].gsub('work', 'checkdepot').split('/checkdepot/')
+        if v['rails'] == '5.0'
+          link = link.join('/')
+        else
+          link = link[0]
+        end
+
+        output << "<a href='http://intertwingly.net/projects/#{link}#todos'>
+          Ruby #{v['ruby']}: <img src='travis-#{status}.svg'>
+        </a>"
       end
 
-      status = document.children.text.split("\n          ")[5]
-      link = document.children[7].children[1].attributes[0].value
-
-      if status.include?('0 errors') && status.include?('0 failures')
-        "<a href='http://intertwingly.net/projects/#{link}#todos'>
-          <img src='travis-passing.svg'>
-        </a>"
-      else
-        "<a href='http://intertwingly.net/projects/#{link}#todos'>
-          <img src='travis-failing.svg'>
-        </a>"
-      end
+      output.join(' ')
     end
 
     def pretty_commit(commit)
@@ -98,9 +103,9 @@ class Builder < Sinatra::Application
   # Service loaders
   protected
     def load_awdwr
-      uri = URI.parse('http://intertwingly.net/projects/dashboard.html')
+      uri = URI.parse('http://intertwingly.net/projects/dashboard.json')
       response = Net::HTTP.get_response(uri)
-      @awdwr_status = Oga.parse_html(response.body).xpath('//tr')
+      @data = JSON.parse(response.body)['config']
     end
 
     def load_github
