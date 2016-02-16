@@ -12,7 +12,7 @@
   </p>
 </div>
 
-<hr style="margin-bottom: 5px;">
+<hr style="margin-bottom: 0px; margin-top: 0px;">
 
 <div class="row">
   <% BRANCHES.each do |branch| %>
@@ -48,6 +48,7 @@
         <li> AWDWR: <%= awdwr_status(branch) %> </li>
 
         <% if branch == 'master' %>
+          <li> Code Triage: <%= travis_status('codetriage/codetriage', branch) %> </li>
           <li> Discourse: <%= travis_status('discourse/discourse', branch) %> </li>
         <% end %>
       </ul>
