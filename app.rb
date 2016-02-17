@@ -4,6 +4,41 @@ require 'travis'
 require 'net/http'
 require 'uri'
 require 'oga'
+require 'mongoid'
+require 'sidekiq'
+
+# Mongoid Setup
+require_relative 'db/models.rb'
+Mongoid.load!('db/mongoid.yml', ENV['RACK_ENV'].to_sym)
+
+class BookNotificationWorker
+  include Sidekiq::Worker
+
+  def perform(info)
+    repo = [info['rails'], info['ruby']].join('-')
+    if info['pass'] == true
+      status = 'passing'
+    else
+      status = 'failed'
+    end
+
+    unless Notification.recent?(repo, status, service: 'AWDWR')
+      #notify_campfire
+      Notification.create(repo: repo, service: 'AWDWR', status: status, created_at: Time.now)
+    end
+  end
+end
+
+class TravisNotificationWorker
+  include Sidekiq::Worker
+
+  def perform(repo, status)
+    unless Notification.recent?(repo, status, service: 'travis')
+      #notify_campfire
+      Notification.create(repo: repo, service: 'travis', status: status, created_at: Time.now)
+    end
+  end
+end
 
 class Builder < Sinatra::Application
   configure :development do
@@ -36,6 +71,7 @@ class Builder < Sinatra::Application
         if v['pass'] == true
           status = 'passing'
         else
+          BookNotificationWorker.perform_async(v)
           status = 'failing'
         end
 
@@ -94,6 +130,8 @@ class Builder < Sinatra::Application
           <img src='travis-passing.svg'>
         </a>"
       else
+        # Trigger notification is build is failing
+        TravisNotificationWorker.perform_async(repo, @build.state)
         "<a href='https://travis-ci.org/#{repo}/builds/#{@original_build.id}'>
           <img src='travis-failing.svg'>
         </a>"
