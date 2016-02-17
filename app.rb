@@ -25,6 +25,7 @@ class BookNotificationWorker
     unless Notification.recent?(repo, status, service: 'AWDWR')
       #notify_campfire
       Notification.create(repo: repo, service: 'AWDWR', status: status, created_at: Time.now)
+      puts "Notification created at #{Time.now} for #{repo} (#{service})"
     end
   end
 end
@@ -36,6 +37,7 @@ class TravisNotificationWorker
     unless Notification.recent?(repo, status, service: 'travis')
       #notify_campfire
       Notification.create(repo: repo, service: 'travis', status: status, created_at: Time.now)
+      puts "Notification created at #{Time.now} for #{repo} (#{service})"
     end
   end
 end
