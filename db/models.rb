@@ -20,7 +20,7 @@ class Notification
       time_ago = 15.minutes.ago
     end
 
-    if Notification.find_by(repo: repo, service: service, status: status, created_at: (time_ago..Time.now)).any?
+    if Notification.find_by(repo: repo, service: service, status: status, created_at: (time_ago..Time.now))
       true
     else
       false

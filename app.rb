@@ -5,42 +5,13 @@ require 'net/http'
 require 'uri'
 require 'oga'
 require 'mongoid'
-require 'sidekiq'
 
 # Mongoid Setup
 require_relative 'db/models.rb'
 Mongoid.load!('db/mongoid.yml', ENV['RACK_ENV'].to_sym)
 
-class BookNotificationWorker
-  include Sidekiq::Worker
-
-  def perform(info)
-    repo = [info['rails'], info['ruby']].join('-')
-    if info['pass'] == true
-      status = 'passing'
-    else
-      status = 'failed'
-    end
-
-    unless Notification.recent?(repo, status, service: 'AWDWR')
-      #notify_campfire
-      Notification.create(repo: repo, service: 'AWDWR', status: status, created_at: Time.now)
-      puts "Notification created at #{Time.now} for #{repo} (#{service})"
-    end
-  end
-end
-
-class TravisNotificationWorker
-  include Sidekiq::Worker
-
-  def perform(repo, status)
-    unless Notification.recent?(repo, status, service: 'travis')
-      #notify_campfire
-      Notification.create(repo: repo, service: 'travis', status: status, created_at: Time.now)
-      puts "Notification created at #{Time.now} for #{repo} (#{service})"
-    end
-  end
-end
+# Workers Setup
+require_relative 'workers.rb'
 
 class Builder < Sinatra::Application
   configure :development do
