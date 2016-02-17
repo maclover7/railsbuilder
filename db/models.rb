@@ -11,7 +11,7 @@ class Notification
   def self.recent?(repo, status, service:)
     # Special Cases
     if status != 'failed' || repo == 'discourse/discourse'
-      true
+      return true
     end
 
     if service.include?('AWDWR'.freeze)
